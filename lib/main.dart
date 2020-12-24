@@ -7,6 +7,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:meme_gen/themeBuilder.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -24,15 +25,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // final Color darken = Color(0XFF121212);
-
-    return MaterialApp(
-      title: 'Creator',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.pink,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: MyHomePage(title: 'Meme Creator v1.0'),
+    return ThemeBuilder(
+      defaultBrighness: Brightness.light,
+      builder: (context, _brightness) {
+        return MaterialApp(
+          title: 'Creator',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+              primarySwatch: Colors.pink,
+              visualDensity: VisualDensity.adaptivePlatformDensity,
+              brightness: _brightness),
+          home: MyHomePage(title: 'Memeneka™'),
+        );
+      },
     );
   }
 }
@@ -53,7 +58,6 @@ class _MyHomePageState extends State<MyHomePage> {
   String headerTxt = " ";
   String footertxt = " ";
   File _image;
-  File _createdMeme;
   Random _randomNumber = new Random();
   bool _isImageSelected = false;
   final _snackBarKey = GlobalKey<ScaffoldState>();
@@ -71,8 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
       } else {}
       _image = image;
     });
-    new Directory('storage/emulated/0/' + 'MemeGenerator')
-        .create(recursive: true);
+    new Directory('storage/emulated/0/' + 'Memeneka').create(recursive: true);
   }
 
   @override
@@ -93,6 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 icon: Icon(Icons.brightness_2_outlined, color: Colors.white),
                 onPressed: () {
                   //toggle dark theme...
+                  ThemeBuilder.of(context).changeAppTheme();
                 })
           ],
           title: Center(
@@ -261,7 +265,9 @@ class _MyHomePageState extends State<MyHomePage> {
                               new ElevatedButton(
                                 onPressed: () {
                                   //do something..
-                                  generateMeme();
+                                  setState(() {
+                                    generateMeme();
+                                  });
                                 },
                                 child: new Icon(Icons.save_alt_outlined),
                               ),
@@ -295,21 +301,29 @@ class _MyHomePageState extends State<MyHomePage> {
     // This trailing comma makes auto-formatting nicer for build methods.
   }
 
-  generateMeme() async {
+  Future<void> generateMeme() async {
     //taking screenshot from a render Boundary...
     RenderRepaintBoundary _boundary =
         _globalKey.currentContext.findRenderObject();
     ui.Image _image = await _boundary.toImage();
-    final _directory = (await getApplicationDocumentsDirectory()).path;
+
     ByteData _byteData =
         await _image.toByteData(format: ui.ImageByteFormat.png);
     Uint8List pngBytes = _byteData.buffer.asUint8List();
-    print(pngBytes);
-    File _memeFile =
-        new File('$_directory/screenshot${_randomNumber.nextInt(200)}.');
-    setState(() {
-      _createdMeme = _memeFile;
-    });
+
+    var _storageStatus = await Permission.storage.status;
+    print(_storageStatus);
+    if (!_storageStatus.isGranted) await Permission.storage.request();
+
+    final result = await ImageGallerySaver.saveImage(
+        Uint8List.fromList(pngBytes),
+        quality: 60,
+        name: "_generatedMemes");
+    print(result);
+
+    String _timestamp = new Random().toString();
+    print(_timestamp);
+
     final snackBar = SnackBar(
       backgroundColor: Colors.pink,
       content: Row(
@@ -327,23 +341,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
 
-// Find the Scaffold in the widget tree and use it to show a SnackBar.
-    _snackBarKey.currentState.showSnackBar(snackBar);
-    _saveFile(_createdMeme);
-    _memeFile.writeAsBytes(pngBytes);
+//
   }
-
-  _saveFile(File file) async {
-    //saving the file...
-    await _askForPermission();
-    final _result = await ImageGallerySaver.saveImage(
-        Uint8List.fromList(await file.readAsBytes()));
-    print(_result);
-  }
-}
-
-_askForPermission() async {
-  //asking for permission...
-  Map<PermissionGroup, PermissionStatus> permissions =
-      await PermissionHandler().requestPermissions([PermissionGroup.photos]);
 }

@@ -27,8 +27,14 @@ dependencies:
   image_gallery_saver: '^1.6.7'
   permission_handler: ^5.0.1+1
   dio: ^3.0.10
-  path_provider: ^1.6.24
+  path_provider: ^1.1.0
   avatar_glow: ^1.2.0
+  faker: ^1.3.0
+  share: ^0.6.5+4
+  esys_flutter_share: ^1.0.2
+  
+ 
+  
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -67,9 +73,9 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: Handwritten
+    - family: Impacted
       fonts:
-        - asset: assets/fonts/Handwritten.ttf
+        - asset: assets/fonts/impact.ttf
  
    
   

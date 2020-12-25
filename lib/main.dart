@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:math';
+import 'dart:math' show Random;
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
@@ -8,8 +8,9 @@ import 'package:flutter/services.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meme_gen/themeBuilder.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:faker/faker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:esys_flutter_share/esys_flutter_share.dart';
 
 Future<void> main() async {
   //fixing async issue on main()..
@@ -174,6 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     textAlign: TextAlign.center,
                                     style: new TextStyle(
                                       fontSize: 25.0,
+                                      fontFamily: "Impacted",
                                       color: Colors.white,
                                       shadows: <Shadow>[
                                         Shadow(
@@ -201,6 +203,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     textAlign: TextAlign.center,
                                     style: new TextStyle(
                                       fontSize: 25.0,
+                                      fontFamily: "Impacted",
                                       color: Colors.white,
                                       shadows: <Shadow>[
                                         Shadow(
@@ -274,8 +277,9 @@ class _MyHomePageState extends State<MyHomePage> {
                               SizedBox(width: 20.0),
                               new ElevatedButton(
                                   onPressed: () {
-                                    //do something..
-                                    print("Share to media..");
+                                    setState(() {
+                                      _shareMeme();
+                                    });
                                   },
                                   child: new Icon(Icons.share_outlined)),
                               SizedBox(height: 100.0),
@@ -315,32 +319,76 @@ class _MyHomePageState extends State<MyHomePage> {
     print(_storageStatus);
     if (!_storageStatus.isGranted) await Permission.storage.request();
 
-    final result = await ImageGallerySaver.saveImage(
-        Uint8List.fromList(pngBytes),
-        quality: 60,
-        name: "_generatedMemes");
+    //try to generate random names for images...
+    String _memeName = faker.internet.userName() + "_memeneka2021";
+    print(_memeName);
+
+    final result =
+        await ImageGallerySaver.saveImage(Uint8List.fromList(pngBytes),
+                //Quality of a meme...
+                quality: 70,
+                name: _memeName)
+            .whenComplete(() {
+      final snackBar = SnackBar(
+        backgroundColor: Colors.pink,
+        content: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(Icons.sentiment_satisfied,
+                size: 25.0, color: Colors.greenAccent),
+            SizedBox(width: 3.0),
+            Text('Successfully Created a Meme!',
+                style: TextStyle(
+                  color: Colors.white,
+                )),
+          ],
+        ),
+      );
+
+      _snackBarKey.currentState.showSnackBar(snackBar);
+    });
     print(result);
 
-    String _timestamp = new Random().toString();
-    print(_timestamp);
-
-    final snackBar = SnackBar(
-      backgroundColor: Colors.pink,
-      content: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Icon(Icons.sentiment_satisfied,
-              size: 25.0, color: Colors.greenAccent),
-          SizedBox(width: 3.0),
-          Text('Successfully Created a Meme!',
-              style: TextStyle(
-                color: Colors.white,
-              )),
-        ],
-      ),
-    );
-
 //
+  }
+
+  Future<void> _shareMeme() async {
+    //taking screenshot from a render Boundary...
+    RenderRepaintBoundary _boundary =
+        _globalKey.currentContext.findRenderObject();
+    ui.Image _image = await _boundary.toImage();
+
+    ByteData _byteData =
+        await _image.toByteData(format: ui.ImageByteFormat.png);
+    Uint8List pngBytes = _byteData.buffer.asUint8List();
+
+    var _storageStatus = await Permission.storage.status;
+    print(_storageStatus);
+    if (!_storageStatus.isGranted) await Permission.storage.request();
+
+    //try to generate random names for images...
+    String _memeName = faker.internet.userName() + "_memeneka2021";
+    print(_memeName);
+    //result is a map-type with filepath, isSuccess and errorMessage...
+    final result = await ImageGallerySaver.saveImage(
+        Uint8List.fromList(pngBytes),
+        quality: 70,
+        name: _memeName);
+
+    //getting the path of the saved meme....
+    //converting the entry to a list so I can access by index...
+    var entryList = result.entries.toList();
+    var imagePath = entryList[0].value;
+    print(entryList[0].value); // prints the first value which is the path....
+    List<String> imagePaths = [];
+    imagePaths.add(imagePath);
+    // final RenderBox box = context.findRenderObject();
+    // Share.shareFiles(imagePaths,
+    //     subject: 'Share ScreenShot',
+    //     text: 'Hello, check your share files!',
+    //     sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+
+    await Share.file('Memeneka', _memeName + ".jpg", pngBytes, 'image/jpg');
   }
 }

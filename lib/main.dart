@@ -5,6 +5,8 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_switch/flutter_switch.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meme_gen/themeBuilder.dart';
@@ -15,6 +17,7 @@ import 'package:esys_flutter_share/esys_flutter_share.dart';
 Future<void> main() async {
   //fixing async issue on main()..
   WidgetsFlutterBinding.ensureInitialized();
+  //fixing the app potrait mode...
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) {
     runApp(MyApp());
@@ -30,10 +33,13 @@ class MyApp extends StatelessWidget {
       defaultBrighness: Brightness.light,
       builder: (context, _brightness) {
         return MaterialApp(
-          title: 'Creator',
+          title: 'Memeneka™',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
-              primarySwatch: Colors.pink,
+              fontFamily: "Aovel Sans",
+              floatingActionButtonTheme: FloatingActionButtonThemeData(
+                  foregroundColor: Colors.white, backgroundColor: Colors.teal),
+              primarySwatch: Colors.teal,
               visualDensity: VisualDensity.adaptivePlatformDensity,
               brightness: _brightness),
           home: MyHomePage(title: 'Memeneka™'),
@@ -59,9 +65,9 @@ class _MyHomePageState extends State<MyHomePage> {
   String headerTxt = " ";
   String footertxt = " ";
   File _image;
-  Random _randomNumber = new Random();
   bool _isImageSelected = false;
   final _snackBarKey = GlobalKey<ScaffoldState>();
+  bool isThemeChanged = false;
 
   Future getImage() async {
     var image;
@@ -88,21 +94,71 @@ class _MyHomePageState extends State<MyHomePage> {
           leading: IconButton(
             onPressed: () {
               //toggle pop-up...
+               Widget popUpMenuButton() {
+    return PopupMenuButton<String>(
+        icon: Icon(
+          Icons.more_vert,
+          color: Colors.white,
+          size: 24,
+        ),
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              PopupMenuItem<String>(
+                value: "share",
+                child: Row(
+                  children: <Widget>[
+                    Icon(
+                      Icons.share,
+                      color: Colors.green,
+                    ),
+                    SizedBox(
+                      width: 10.0,
+                    ),
+                    Text(
+                      "Share This",
+                      style: TextStyle(
+                          fontSize: 12.0, fontFamily: "Poppins Regular"),
+                    ),
+                  ],
+                ),
+              ),
+            ]);
+  }
+              popUpMenuButton();
             },
             icon: Icon(Icons.sort_outlined),
             color: Colors.white,
           ),
           actions: [
             IconButton(
-                icon: Icon(Icons.brightness_2_outlined, color: Colors.white),
+                icon: Icon(isThemeChanged
+                    ? Icons.brightness_2_outlined
+                    : Icons.wb_sunny_outlined),
                 onPressed: () {
                   //toggle dark theme...
                   ThemeBuilder.of(context).changeAppTheme();
+                  setState(() {
+                    isThemeChanged = !isThemeChanged;
+                  });
+
+                  //adding a delay before displaying a toast..
+                  Future.delayed(const Duration(milliseconds: 500), () {
+                    setState(() {
+                      Fluttertoast.showToast(
+                          msg: "Theme Changed!",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.teal,
+                          textColor: Colors.white,
+                          fontSize: 16.0);
+                    });
+                  });
                 })
           ],
           title: Center(
               child: Text(
             widget.title,
+            style: new TextStyle(fontWeight: FontWeight.normal),
           )),
         ),
         floatingActionButton: FloatingActionButton(
@@ -116,7 +172,6 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             children: [
               new SingleChildScrollView(
-                // physics: NeverScrollableScrollPhysics(),
                 child: RepaintBoundary(
                   //assigning the key...
                   key: _globalKey,
@@ -137,7 +192,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               child: Container(
                                 height: 350.0,
                                 decoration: new BoxDecoration(
-                                    color: Colors.black.withOpacity(.3),
+                                    // color: Colors.black.withOpacity(.3),
+                                    color: Colors.teal.withOpacity(.3),
                                     // borderRadius: BorderRadius.only(
                                     //   // topRight: Radius.circular(30.0),
                                     //   // bottomLeft: Radius.circular(30.0),
@@ -244,7 +300,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                 headerTxt = value;
                               });
                             },
-                            decoration: InputDecoration(hintText: "Text 1"),
+                            decoration: InputDecoration(
+                                hintText: "Text 1",
+                                prefixIcon:
+                                    new Icon(Icons.drive_file_rename_outline)),
                           ),
                         ),
                         Padding(
@@ -257,7 +316,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                 footertxt = value;
                               });
                             },
-                            decoration: InputDecoration(hintText: "Text 2"),
+                            decoration: InputDecoration(
+                                hintText: "Text 2",
+                                prefixIcon:
+                                    new Icon(Icons.drive_file_rename_outline)),
                           ),
                         ),
                         Padding(
@@ -293,7 +355,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: new Text(
                           "Pick an Image to Get Started!😉",
                           style: new TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20.0),
+                              fontSize: 20.0, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -330,15 +392,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 name: _memeName)
             .whenComplete(() {
       final snackBar = SnackBar(
-        backgroundColor: Colors.pink,
+        backgroundColor: Colors.teal,
         content: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(Icons.sentiment_satisfied,
-                size: 25.0, color: Colors.greenAccent),
+            Icon(Icons.done_all_outlined, size: 25.0, color: Colors.white),
             SizedBox(width: 3.0),
-            Text('Successfully Created a Meme!',
+            Text('Successfully Saved to Device!',
                 style: TextStyle(
                   color: Colors.white,
                 )),
@@ -379,16 +440,13 @@ class _MyHomePageState extends State<MyHomePage> {
     //getting the path of the saved meme....
     //converting the entry to a list so I can access by index...
     var entryList = result.entries.toList();
-    var imagePath = entryList[0].value;
+    // var imagePath = entryList[0].value;
     print(entryList[0].value); // prints the first value which is the path....
-    List<String> imagePaths = [];
-    imagePaths.add(imagePath);
-    // final RenderBox box = context.findRenderObject();
-    // Share.shareFiles(imagePaths,
-    //     subject: 'Share ScreenShot',
-    //     text: 'Hello, check your share files!',
-    //     sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+    // List<String> imagePaths = [];
+    // imagePaths.add(imagePath);
 
     await Share.file('Memeneka', _memeName + ".jpg", pngBytes, 'image/jpg');
   }
+
+
 }

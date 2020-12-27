@@ -31,10 +31,8 @@ class _ThemeBuilderState extends State<ThemeBuilder> {
     setState(() {
       if (_brightness == Brightness.dark) {
         _brightness = Brightness.light;
-
-      }
-      else{
-         _brightness = Brightness.dark;
+      } else {
+        _brightness = Brightness.dark;
       }
       print("App Theme has changed!");
     });

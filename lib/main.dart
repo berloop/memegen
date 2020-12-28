@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
           title: 'Memeneka™',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
-              fontFamily: "Aovel Sans",
+              fontFamily: "Nexa Bold",
               floatingActionButtonTheme: FloatingActionButtonThemeData(
                   foregroundColor: Colors.white, backgroundColor: Colors.teal),
               primarySwatch: Colors.teal,
@@ -61,6 +61,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   //global key for repaint boundary
   final GlobalKey _globalKey = new GlobalKey();
+
   //variables...
   String headerTxt = " ";
   String footertxt = " ";
@@ -90,76 +91,99 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
         key: _snackBarKey,
         resizeToAvoidBottomInset: false,
+        // drawer: new Drawer(
+        //   child: ListView(
+        //       // Important: Remove any padding from the ListView.
+        //       padding: EdgeInsets.zero,
+        //       children: <Widget>[
+        //         DrawerHeader(
+        //           child: Text('Memeneka'),
+        //           decoration: BoxDecoration(
+        //             color: Colors.teal,
+        //           ),
+        //         ),
+        //         ListTile(
+        //           leading: new Icon(Icons.home_outlined),
+        //           title: Text('Home', style: new TextStyle()),
+        //           onTap: () {
+        //             // Update the state of the app.
+        //             // ...
+        //           },
+        //         ),
+        //         ListTile(
+        //           title: Text('Item 2'),
+        //           onTap: () {
+        //             // Update the state of the app.
+        //             // ...
+        //           },
+        //         ),
+        //       ]),
+        // ),
         appBar: AppBar(
-          leading: IconButton(
-            onPressed: () {
-              //toggle pop-up...
-               Widget popUpMenuButton() {
-    return PopupMenuButton<String>(
-        icon: Icon(
-          Icons.more_vert,
-          color: Colors.white,
-          size: 24,
-        ),
-        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              PopupMenuItem<String>(
-                value: "share",
-                child: Row(
-                  children: <Widget>[
-                    Icon(
-                      Icons.share,
-                      color: Colors.green,
-                    ),
-                    SizedBox(
-                      width: 10.0,
-                    ),
-                    Text(
-                      "Share This",
-                      style: TextStyle(
-                          fontSize: 12.0, fontFamily: "Poppins Regular"),
-                    ),
-                  ],
-                ),
-              ),
-            ]);
-  }
-              popUpMenuButton();
-            },
-            icon: Icon(Icons.sort_outlined),
-            color: Colors.white,
-          ),
+          // leading: IconButton(
+          //   onPressed: () {
+          //     //toggle pop-up...
+          //     showDialog(
+          //         context: context,
+          //         builder: (BuildContext context) {
+          //           return AlertDialog(
+          //             content: Text(
+          //               "Do you love Memeneka?",
+          //               textAlign: TextAlign.center,
+          //             ),
+          //             actions: [
+          //               FlatButton(
+          //                 onPressed: () {
+          //                   Navigator.of(context).pop();
+          //                 },
+          //                 child: Text("Close"),
+          //               )
+          //             ],
+          //           );
+          //         });
+          //     print("Rate This App");
+          //   },
+          //   icon: Icon(Icons.favorite_outline),
+          //   color: Colors.white,
+          // ),
           actions: [
+            //changing app theme.....
             IconButton(
-                icon: Icon(isThemeChanged
-                    ? Icons.brightness_2_outlined
-                    : Icons.wb_sunny_outlined),
-                onPressed: () {
-                  //toggle dark theme...
-                  ThemeBuilder.of(context).changeAppTheme();
-                  setState(() {
-                    isThemeChanged = !isThemeChanged;
-                  });
+              icon: Icon(isThemeChanged
+                  ? Icons.brightness_2_outlined
+                  : Icons.wb_sunny_outlined),
+              onPressed: () {
+                //toggle dark theme...
+                ThemeBuilder.of(context).changeAppTheme();
+                setState(() {
+                  isThemeChanged = !isThemeChanged;
+                });
 
-                  //adding a delay before displaying a toast..
-                  Future.delayed(const Duration(milliseconds: 500), () {
-                    setState(() {
-                      Fluttertoast.showToast(
-                          msg: "Theme Changed!",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.teal,
-                          textColor: Colors.white,
-                          fontSize: 16.0);
-                    });
+                //adding a delay before displaying a toast..
+                Future.delayed(const Duration(milliseconds: 500), () {
+                  setState(() {
+                    Fluttertoast.showToast(
+                        msg: "Theme Changed!",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.teal,
+                        textColor: Colors.white,
+                        fontSize: 16.0);
                   });
-                })
+                });
+              },
+            ),
+            //pop up menu...
+            popUpMenuButton(),
           ],
-          title: Center(
-              child: Text(
-            widget.title,
-            style: new TextStyle(fontWeight: FontWeight.normal),
-          )),
+          title: Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text(
+              widget.title,
+              style: new TextStyle(fontWeight: FontWeight.normal),
+            ),
+          ),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
@@ -301,9 +325,10 @@ class _MyHomePageState extends State<MyHomePage> {
                               });
                             },
                             decoration: InputDecoration(
-                                hintText: "Text 1",
-                                prefixIcon:
-                                    new Icon(Icons.drive_file_rename_outline)),
+                              hintText: "Text 1",
+                              prefixIcon:
+                                  new Icon(Icons.drive_file_rename_outline),
+                            ),
                           ),
                         ),
                         Padding(
@@ -401,8 +426,9 @@ class _MyHomePageState extends State<MyHomePage> {
             SizedBox(width: 3.0),
             Text('Successfully Saved to Device!',
                 style: TextStyle(
-                  color: Colors.white,
-                )),
+                    color: Colors.white,
+                    fontWeight: FontWeight.normal,
+                    fontFamily: "Nexa Bold")),
           ],
         ),
       );
@@ -448,5 +474,166 @@ class _MyHomePageState extends State<MyHomePage> {
     await Share.file('Memeneka', _memeName + ".jpg", pngBytes, 'image/jpg');
   }
 
+  Widget popUpMenuButton() {
+    return PopupMenuButton<String>(
+      icon: Icon(
+        Icons.sort_outlined,
+        color: Colors.white,
+        size: 24,
+      ),
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        PopupMenuItem<String>(
+          value: "help",
+          child: Row(
+            children: <Widget>[
+              Icon(Icons.help_outlined, color: Colors.teal),
+              SizedBox(
+                width: 10.0,
+              ),
+              Text(
+                "Help",
+                style: TextStyle(fontSize: 12.0),
+              ),
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: "about",
+          child: Row(
+            children: <Widget>[
+              Icon(
+                Icons.person_outline,
+                color: Colors.teal,
+              ),
+              SizedBox(
+                width: 10.0,
+              ),
+              Text(
+                "About.",
+                style: TextStyle(fontSize: 12.0),
+              ),
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: "rate",
+          child: Row(
+            children: <Widget>[
+              Icon(
+                Icons.rate_review_outlined,
+                color: Colors.teal,
+              ),
+              SizedBox(
+                width: 10.0,
+              ),
+              Text(
+                "Rate Us",
+                style: TextStyle(fontSize: 12.0),
+              ),
+            ],
+          ),
+        ),
+      ],
+      onSelected: (val) async {
+        if (val == "Help") {
+          print("Help");
+        } else if (val == "about") {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Row(
+                          children: [
+                            Icon(Icons.person_outline),
+                            SizedBox(
+                              width: 15.0,
+                            ),
+                            Text(
+                              "About Memeneka™",
+                              style: new TextStyle(fontSize: 20.0),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 10.0),
+                      new Text(
+                        "'A meme creator app intended for creating memes or text-statuses, So make memes guys and together we will change the world!😂",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(),
+                      ),
+                      SizedBox(height: 15.0),
+                      new Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              print("Open Playstore...");
+                            },
+                            child: Text("View Developer's Website"),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                );
+              });
 
+          print("About Developer");
+        } else if (val == "rate") {
+          showDialog(
+              barrierDismissible: false,
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset("assets/images/celeb.png"),
+                      SizedBox(height: 15.0),
+                      Text(
+                        "Do you love Memeneka™?",
+                        textAlign: TextAlign.center,
+                        style: new TextStyle(fontSize: 20.0),
+                      ),
+                      SizedBox(height: 15.0),
+                      Text(
+                        "If you enjoy this app, Please rate and review it on Play Store. Thank You!",
+                        textAlign: TextAlign.start,
+                      ),
+                      SizedBox(height: 15.0),
+                      new Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all<Color>(Colors.grey),
+                            ),
+                            child: Text("Maybe Later!"),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              print("Open Playstore...");
+                            },
+                            child: Text("Rate It Now"),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                );
+              });
+          print("Rate");
+        }
+      },
+    );
+  }
 }

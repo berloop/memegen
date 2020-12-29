@@ -5,7 +5,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_switch/flutter_switch.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
@@ -13,6 +12,7 @@ import 'package:meme_gen/themeBuilder.dart';
 import 'package:faker/faker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 Future<void> main() async {
   //fixing async issue on main()..
@@ -69,6 +69,8 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _isImageSelected = false;
   final _snackBarKey = GlobalKey<ScaffoldState>();
   bool isThemeChanged = false;
+  final _firstController = TextEditingController();
+  final _secondController = TextEditingController();
 
   Future getImage() async {
     var image;
@@ -86,66 +88,19 @@ class _MyHomePageState extends State<MyHomePage> {
     new Directory('storage/emulated/0/' + 'Memeneka').create(recursive: true);
   }
 
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    _firstController.dispose();
+    _secondController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         key: _snackBarKey,
         resizeToAvoidBottomInset: false,
-        // drawer: new Drawer(
-        //   child: ListView(
-        //       // Important: Remove any padding from the ListView.
-        //       padding: EdgeInsets.zero,
-        //       children: <Widget>[
-        //         DrawerHeader(
-        //           child: Text('Memeneka'),
-        //           decoration: BoxDecoration(
-        //             color: Colors.teal,
-        //           ),
-        //         ),
-        //         ListTile(
-        //           leading: new Icon(Icons.home_outlined),
-        //           title: Text('Home', style: new TextStyle()),
-        //           onTap: () {
-        //             // Update the state of the app.
-        //             // ...
-        //           },
-        //         ),
-        //         ListTile(
-        //           title: Text('Item 2'),
-        //           onTap: () {
-        //             // Update the state of the app.
-        //             // ...
-        //           },
-        //         ),
-        //       ]),
-        // ),
         appBar: AppBar(
-          // leading: IconButton(
-          //   onPressed: () {
-          //     //toggle pop-up...
-          //     showDialog(
-          //         context: context,
-          //         builder: (BuildContext context) {
-          //           return AlertDialog(
-          //             content: Text(
-          //               "Do you love Memeneka?",
-          //               textAlign: TextAlign.center,
-          //             ),
-          //             actions: [
-          //               FlatButton(
-          //                 onPressed: () {
-          //                   Navigator.of(context).pop();
-          //                 },
-          //                 child: Text("Close"),
-          //               )
-          //             ],
-          //           );
-          //         });
-          //     print("Rate This App");
-          //   },
-          //   icon: Icon(Icons.favorite_outline),
-          //   color: Colors.white,
-          // ),
           actions: [
             //changing app theme.....
             IconButton(
@@ -319,6 +274,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           padding: const EdgeInsets.only(
                               top: 5, left: 16.0, right: 16.0, bottom: 16.0),
                           child: TextField(
+                            controller: _firstController,
+                            maxLength: 100,
+                            maxLengthEnforced: true,
                             onChanged: (value) {
                               setState(() {
                                 headerTxt = value;
@@ -335,6 +293,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16.0, vertical: 5.0),
                           child: new TextField(
+                            controller: _secondController,
+                            maxLength: 100,
+                            maxLengthEnforced: true,
                             onChanged: (value) {
                               //using setstate to update test on real-time...
                               setState(() {
@@ -536,6 +497,21 @@ class _MyHomePageState extends State<MyHomePage> {
       ],
       onSelected: (val) async {
         if (val == "Help") {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  content: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: new Text("How to Use Memeneka™"),
+                      )
+                    ],
+                  ),
+                );
+              });
+
           print("Help");
         } else if (val == "about") {
           showDialog(
@@ -560,11 +536,12 @@ class _MyHomePageState extends State<MyHomePage> {
                           ],
                         ),
                       ),
+                      new Text("Version 1.0"),
                       SizedBox(height: 10.0),
                       new Text(
                         "'A meme creator app intended for creating memes or text-statuses, So make memes guys and together we will change the world!😂",
                         textAlign: TextAlign.center,
-                        style: TextStyle(),
+                        style: TextStyle(fontWeight: FontWeight.w100),
                       ),
                       SizedBox(height: 15.0),
                       new Row(
@@ -572,9 +549,15 @@ class _MyHomePageState extends State<MyHomePage> {
                         children: [
                           ElevatedButton(
                             onPressed: () {
-                              print("Open Playstore...");
+                              String _devUrl = "https://egretstudios.com/";
+                              _launchInBrowser(_devUrl);
+                              print("Opening Developer's Website");
                             },
-                            child: Text("View Developer's Website"),
+                            child: Text("View Developer's Site"),
+                          ),
+                          new IconButton(
+                            icon: new Icon(Icons.share_outlined),
+                            onPressed: () async => await _shareMemeneka(),
                           )
                         ],
                       )
@@ -635,5 +618,29 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       },
     );
+  }
+
+  Future<void> _launchInBrowser(String url) async {
+    if (await canLaunch(url)) {
+      await launch(
+        url,
+        forceSafariVC: false,
+        forceWebView: false,
+        headers: <String, String>{'my_header_key': 'my_header_value'},
+      );
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  Future<void> _shareMemeneka() async {
+    try {
+      Share.text(
+          'Did you know about Memeneka™ App?',
+          'Did you know about Memeneka™ App? Its a cool app that allows you to make memes, If we can make memes, we can change the world😂.',
+          'text/plain');
+    } catch (e) {
+      print('error: $e');
+    }
   }
 }

@@ -265,14 +265,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               SizedBox(
-                height: 5.0,
+                height: 3.0,
               ),
               _isImageSelected
                   ? Column(
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(
-                              top: 5, left: 16.0, right: 16.0, bottom: 16.0),
+                              top: 5, left: 16.0, right: 16.0, bottom: 8.0),
                           child: TextField(
                             controller: _firstController,
                             maxLength: 100,
@@ -291,7 +291,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 5.0),
+                              horizontal: 16.0, vertical: 3.0),
                           child: new TextField(
                             controller: _secondController,
                             maxLength: 100,
@@ -496,8 +496,9 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ],
       onSelected: (val) async {
-        if (val == "Help") {
+        if (val == "help") {
           showDialog(
+              barrierDismissible: false,
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
@@ -509,6 +510,14 @@ class _MyHomePageState extends State<MyHomePage> {
                       )
                     ],
                   ),
+                  actions: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text("Okay, I Get it Now!"),
+                    ),
+                  ],
                 );
               });
 
@@ -525,7 +534,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Row(
                           children: [
-                            Icon(Icons.person_outline),
+                            Icon(Icons.person_rounded),
                             SizedBox(
                               width: 15.0,
                             ),
@@ -537,11 +546,20 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ),
                       new Text("Version 1.0"),
+                      Divider(
+                        color: Colors.teal,
+                      ),
                       SizedBox(height: 10.0),
-                      new Text(
-                        "'A meme creator app intended for creating memes or text-statuses, So make memes guys and together we will change the world!😂",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontWeight: FontWeight.w100),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: new Text(
+                          "'A meme creator app intended for creating memes or text-statuses, So make memes guys and together we will change the world!😂",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontWeight: FontWeight.w100),
+                        ),
+                      ),
+                      Divider(
+                        color: Colors.teal,
                       ),
                       SizedBox(height: 15.0),
                       new Row(
@@ -553,7 +571,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               _launchInBrowser(_devUrl);
                               print("Opening Developer's Website");
                             },
-                            child: Text("View Developer's Site"),
+                            child: Text("View Developer's Website"),
                           ),
                           new IconButton(
                             icon: new Icon(Icons.share_outlined),
@@ -636,7 +654,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _shareMemeneka() async {
     try {
       Share.text(
-          'Did you know about Memeneka™ App?',
+          'Tell a Friend about Memeneka™',
           'Did you know about Memeneka™ App? Its a cool app that allows you to make memes, If we can make memes, we can change the world😂.',
           'text/plain');
     } catch (e) {

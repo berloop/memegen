@@ -527,6 +527,7 @@ class _MyHomePageState extends State<MyHomePage> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
+                  contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
                   content: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -540,7 +541,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                             Text(
                               "About Memeneka™",
-                              style: new TextStyle(fontSize: 20.0),
+                              style: new TextStyle(fontSize: 18.0),
                             ),
                           ],
                         ),
@@ -571,7 +572,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               _launchInBrowser(_devUrl);
                               print("Opening Developer's Website");
                             },
-                            child: Text("View Developer's Website"),
+                            child: Text("View Developer's Site"),
                           ),
                           new IconButton(
                             icon: new Icon(Icons.share_outlined),
@@ -587,7 +588,7 @@ class _MyHomePageState extends State<MyHomePage> {
           print("About Developer");
         } else if (val == "rate") {
           showDialog(
-              barrierDismissible: false,
+              barrierDismissible: true,
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
@@ -601,10 +602,19 @@ class _MyHomePageState extends State<MyHomePage> {
                         textAlign: TextAlign.center,
                         style: new TextStyle(fontSize: 20.0),
                       ),
+                      Divider(
+                        color: Colors.teal,
+                      ),
                       SizedBox(height: 15.0),
                       Text(
                         "If you enjoy this app, Please rate and review it on Play Store. Thank You!",
-                        textAlign: TextAlign.start,
+                        textAlign: TextAlign.center,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Divider(
+                          color: Colors.teal,
+                        ),
                       ),
                       SizedBox(height: 15.0),
                       new Row(
@@ -618,7 +628,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               backgroundColor:
                                   MaterialStateProperty.all<Color>(Colors.grey),
                             ),
-                            child: Text("Maybe Later!"),
+                            child: Text("Later!"),
                           ),
                           ElevatedButton(
                             onPressed: () {

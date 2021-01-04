@@ -1,4 +1,5 @@
 import 'dart:io';
+// ignore: unused_import
 import 'dart:math' show Random;
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -18,6 +19,7 @@ Future<void> main() async {
   //fixing async issue on main()..
   WidgetsFlutterBinding.ensureInitialized();
   //fixing the app potrait mode...
+
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) {
     runApp(MyApp());

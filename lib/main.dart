@@ -61,6 +61,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   //global key for repaint boundary
   final GlobalKey _globalKey = new GlobalKey();
 
@@ -90,10 +95,12 @@ class _MyHomePageState extends State<MyHomePage> {
     new Directory('storage/emulated/0/' + 'Memeneka').create(recursive: true);
   }
 
+  @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
     _firstController.dispose();
     _secondController.dispose();
+
     super.dispose();
   }
 
@@ -347,6 +354,18 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ),
                     ),
+              SizedBox(height: 15.0),
+              //Native Ads....
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Container(
+                  height: MediaQuery.of(context).size.height * .15,
+                  decoration: new BoxDecoration(
+                      //container of image...
+                      color: Colors.teal.withOpacity(.2),
+                      borderRadius: BorderRadius.circular(10.0)),
+                ),
+              )
               // _createdMeme != null ? Image.file(_createdMeme): Container(),
             ],
           ),
@@ -423,7 +442,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //result is a map-type with filepath, isSuccess and errorMessage...
     final result = await ImageGallerySaver.saveImage(
         Uint8List.fromList(pngBytes),
-        quality: 70,
+        quality: 90,
         name: _memeName);
 
     //getting the path of the saved meme....
@@ -446,21 +465,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
         PopupMenuItem<String>(
-          value: "help",
-          child: Row(
-            children: <Widget>[
-              Icon(Icons.help_outlined, color: Colors.teal),
-              SizedBox(
-                width: 10.0,
-              ),
-              Text(
-                "Help",
-                style: TextStyle(fontSize: 12.0),
-              ),
-            ],
-          ),
-        ),
-        PopupMenuItem<String>(
           value: "about",
           child: Row(
             children: <Widget>[
@@ -472,7 +476,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 width: 10.0,
               ),
               Text(
-                "About.",
+                "About",
                 style: TextStyle(fontSize: 12.0),
               ),
             ],
@@ -498,33 +502,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ],
       onSelected: (val) async {
-        if (val == "help") {
-          showDialog(
-              barrierDismissible: false,
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  content: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: new Text("How to Use Memeneka™"),
-                      )
-                    ],
-                  ),
-                  actions: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text("Okay, I Get it Now!"),
-                    ),
-                  ],
-                );
-              });
-
-          print("Help");
-        } else if (val == "about") {
+        if (val == "about") {
           showDialog(
               context: context,
               builder: (BuildContext context) {

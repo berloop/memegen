@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:share/share.dart';
 
 final Directory _memeDir = Directory('/storage/emulated/0/Memeneka™');
 
@@ -63,6 +64,27 @@ class _SavedMemeScreenState extends State<SavedMemeScreen> {
                   onTap: () {
                     //do something about the image....
                     print(imgPath);
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            content: Image.file(File(imgPath)),
+                            contentPadding: EdgeInsets.all(5),
+                            actions: [
+                              IconButton(
+                                  icon: Icon(Icons.share_outlined),
+                                  onPressed: () async {
+                                    Share.shareFiles(['${imgPath}'],
+                                        text: 'Sharing Meme!');
+                                  }),
+                              IconButton(
+                                  icon: Icon(
+                                    Icons.delete_outlined,
+                                  ),
+                                  onPressed: () {}),
+                            ],
+                          );
+                        });
                   },
                   child: Hero(
                     tag: imgPath,

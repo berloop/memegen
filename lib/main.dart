@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:meme_gen/Models/drawer.dart';
 import 'package:meme_gen/themeBuilder.dart';
 import 'package:faker/faker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -32,7 +33,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // final Color darken = Color(0XFF121212);
     return ThemeBuilder(
-      defaultBrighness: Brightness.light,
+      //default Brightness
+      defaultBrighness: Brightness.dark,
       builder: (context, _brightness) {
         return MaterialApp(
           title: 'Memeneka™',
@@ -107,9 +109,16 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        drawer: MemenekaDrawer(),
         key: _snackBarKey,
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
+          leading: Builder(
+            builder: (context) => IconButton(
+              icon: Icon(Icons.sort_outlined),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+            ),
+          ),
           actions: [
             //changing app theme.....
             IconButton(
@@ -139,7 +148,71 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             //pop up menu...
-            popUpMenuButton(),
+            IconButton(
+              icon: Icon(Icons.favorite_outline),
+              onPressed: () {
+                showDialog(
+                    barrierDismissible: true,
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.asset("assets/images/celeba.png"),
+                            SizedBox(height: 15.0),
+                            Text(
+                              "Do you love Memeneka™?",
+                              textAlign: TextAlign.center,
+                              style: new TextStyle(fontSize: 20.0),
+                            ),
+                            Divider(
+                              color: Colors.teal,
+                            ),
+                            SizedBox(height: 15.0),
+                            Text(
+                              "If you enjoy this app, Please rate and review it on Play Store. Thank You!",
+                              textAlign: TextAlign.center,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Divider(
+                                color: Colors.teal,
+                              ),
+                            ),
+                            SizedBox(height: 15.0),
+                            new Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.grey),
+                                  ),
+                                  child: Text("Later!"),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    String _devUrl =
+                                        "https://play.google.com/store/apps/details?id=egretta.com.meme_gen";
+                                    _launchInBrowser(_devUrl);
+
+                                    print("Open Playstore...");
+                                  },
+                                  child: Text("Rate It Now"),
+                                )
+                              ],
+                            )
+                          ],
+                        ),
+                      );
+                    });
+              },
+            )
           ],
           title: Padding(
             padding: const EdgeInsets.only(top: 8.0),
@@ -354,18 +427,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ),
                     ),
-              SizedBox(height: 15.0),
-              //Native Ads....
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Container(
-                  height: MediaQuery.of(context).size.height * .15,
-                  decoration: new BoxDecoration(
-                      //container of image...
-                      color: Colors.teal.withOpacity(.2),
-                      borderRadius: BorderRadius.circular(10.0)),
-                ),
-              )
+
               // _createdMeme != null ? Image.file(_createdMeme): Container(),
             ],
           ),
@@ -395,7 +457,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final result =
         await ImageGallerySaver.saveImage(Uint8List.fromList(pngBytes),
                 //Quality of a meme...
-                quality: 70,
+                quality: 90,
                 name: _memeName)
             .whenComplete(() {
       final snackBar = SnackBar(
@@ -459,7 +521,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget popUpMenuButton() {
     return PopupMenuButton<String>(
       icon: Icon(
-        Icons.sort_outlined,
+        Icons.more_vert,
         color: Colors.white,
         size: 24,
       ),
@@ -536,7 +598,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: new Text(
                           "'A meme creator app intended for creating memes or text-statuses, So make memes guys and together we will change the world!😂",
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontWeight: FontWeight.w100),
+                          style: TextStyle(
+                              fontFamily: "normal",
+                              fontWeight: FontWeight.w100),
                         ),
                       ),
                       Divider(
@@ -575,7 +639,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   content: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset("assets/images/celeb.png"),
+                      Image.asset("assets/images/celeba.png"),
                       SizedBox(height: 15.0),
                       Text(
                         "Do you love Memeneka™?",
@@ -612,6 +676,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                           ElevatedButton(
                             onPressed: () {
+                              String _devUrl =
+                                  "https://play.google.com/store/apps/details?id=egretta.com.meme_gen";
+                              _launchInBrowser(_devUrl);
+
                               print("Open Playstore...");
                             },
                             child: Text("Rate It Now"),
